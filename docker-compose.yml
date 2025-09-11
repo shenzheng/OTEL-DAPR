@@ -109,7 +109,7 @@ services:
       - OTEL_SERVICE_NAME=ordersvc
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
       - OTEL_TRACES_SAMPLER=always_on
-      - DAPR_HTTP_PORT=3501
+      - DAPR_HTTP_PORT=3500
       - DAPR_GRPC_PORT=50002
     depends_on: [redis]
     profiles: ["logs","traces","full"]
@@ -138,7 +138,7 @@ services:
       - OTEL_SERVICE_NAME=paymentsvc
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
       - OTEL_TRACES_SAMPLER=always_on
-      - DAPR_HTTP_PORT=3502
+      - DAPR_HTTP_PORT=3500
       - DAPR_GRPC_PORT=50003
     depends_on: [redis]
     profiles: ["logs","traces","full"]
