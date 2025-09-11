@@ -1,0 +1,29 @@
+receivers:
+  otlp:
+    protocols: { grpc: {}, http: {} }
+
+processors:
+  batch: {}
+  resource:
+    attributes:
+      - key: deployment.environment
+        action: upsert
+        value: dev
+
+exporters:
+  # loki:
+  #   endpoint: http://loki:3100/loki/api/v1/push
+  otlphttp/loki:
+    endpoint: "http://loki:3100/otlp" # Example: if Loki is running on 'loki' hostname and default port
+    tls:
+      insecure: true
+
+service:
+  pipelines:
+    logs:
+      receivers: [otlp]
+      processors: [resource, batch]
+      exporters: [otlphttp/loki]
+
+  telemetry:
+    logs: { level: info }

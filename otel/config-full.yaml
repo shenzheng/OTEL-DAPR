@@ -1,0 +1,46 @@
+receivers:
+  otlp:
+    protocols: { grpc: {}, http: {} }
+  zipkin: {}
+
+connectors:
+  spanmetrics:
+    dimensions: [service.name, http.method, http.route, http.status_code]
+    exemplars: { enabled: true }
+
+processors:
+  batch: {}
+  resource:
+    attributes:
+      - key: deployment.environment
+        action: upsert
+        value: dev
+
+exporters:
+  otlp/tempo:
+    endpoint: http://tempo:4317
+    tls: { insecure: true }
+  loki:
+    endpoint: http://loki:3100/loki/api/v1/push
+  prometheus:
+    endpoint: 0.0.0.0:8889
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp, zipkin]
+      processors: [resource, batch]
+      exporters: [otlp/tempo, spanmetrics]
+
+    logs:
+      receivers: [otlp]
+      processors: [resource, batch]
+      exporters: [loki]
+
+    metrics:
+      receivers: [otlp, spanmetrics]
+      processors: [resource, batch]
+      exporters: [prometheus]
+
+  telemetry:
+    logs: { level: info }

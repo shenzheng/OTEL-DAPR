@@ -1,0 +1,38 @@
+{
+    "title": "RED Metrics",
+    "panels": [
+        {
+            "type": "timeseries",
+            "title": "Request Rate",
+            "targets": [
+                {
+                    "expr": "rate(traces_spanmetrics_calls_total[1m])",
+                    "legendFormat": "{{service_name}} {{http_route}}"
+                }
+            ]
+        },
+        {
+            "type": "timeseries",
+            "title": "Error Rate",
+            "targets": [
+                {
+                    "expr": "rate(traces_spanmetrics_calls_total{status_code!=\"OK\"}[1m])",
+                    "legendFormat": "{{service_name}} {{http_route}}"
+                }
+            ]
+        },
+        {
+            "type": "timeseries",
+            "title": "Request Duration (p95)",
+            "targets": [
+                {
+                    "expr": "histogram_quantile(0.95, sum(rate(traces_spanmetrics_duration_bucket[5m])) by (le, service_name, http_route))",
+                    "legendFormat": "{{service_name}} {{http_route}}"
+                }
+            ]
+        }
+    ],
+    "schemaVersion": 36,
+    "version": 1,
+    "editable": true
+}

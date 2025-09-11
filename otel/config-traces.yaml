@@ -1,0 +1,27 @@
+receivers:
+  otlp:
+    protocols: { grpc: {}, http: {} }
+  zipkin: {} # Dapr 若走 Zipkin 可用；否则不需要
+
+processors:
+  batch: {}
+  resource:
+    attributes:
+      - key: deployment.environment
+        action: upsert
+        value: dev
+
+exporters:
+  otlp/tempo:
+    endpoint: http://tempo:4317
+    tls: { insecure: true }
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp, zipkin]
+      processors: [resource, batch]
+      exporters: [otlp/tempo]
+
+  telemetry:
+    logs: { level: info }
