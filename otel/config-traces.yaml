@@ -1,7 +1,12 @@
 receivers:
   otlp:
-    protocols: { grpc: {}, http: {} }
-  zipkin: {} # Dapr 若走 Zipkin 可用；否则不需要
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+  zipkin:
+    endpoint: 0.0.0.0:9411
 
 processors:
   batch: {}
@@ -13,7 +18,7 @@ processors:
 
 exporters:
   otlp/tempo:
-    endpoint: http://tempo:4317
+    endpoint: tempo:4317
     tls: { insecure: true }
 
 service:

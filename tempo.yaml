@@ -5,7 +5,11 @@ server:
 distributor:
   receivers:
     otlp:
-      protocols: { grpc: {}, http: {} }
+      protocols:
+        grpc:
+          endpoint: 0.0.0.0:4317
+        http:
+          endpoint: 0.0.0.0:4318
 
 ingester:
   trace_idle_period: 10s
@@ -22,7 +26,7 @@ querier:
 
 query_frontend:
   search:
-    duration: 24h
+    max_duration: 24h
 
 storage:
   trace:
