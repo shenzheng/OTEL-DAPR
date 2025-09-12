@@ -6,12 +6,15 @@ networks:
 services:
   # ========== 三个 Collector（不同配置，按阶段起其中一个） ==========
   otel-collector-logs:
-    networks: [oteldaprnet]
+    networks:
+      oteldaprnet:
+        aliases:
+          - otel-collector
     image: otel/opentelemetry-collector-contrib:latest
     command: ["--config=/etc/otelcol/config-logs.yaml"]
     volumes:
       - ./otel/config-logs.yaml:/etc/otelcol/config-logs.yaml:ro
-    ports: ["4317:4317","4318:4318"]
+    ports: ["4317:4317","4318:4318", "8888:8888"]
     profiles: ["logs"]
 
   otel-collector-traces:
@@ -45,7 +48,7 @@ services:
 
   loki:
     networks: [oteldaprnet]
-    image: grafana/loki:2.9.0
+    image: grafana/loki:latest
     ports: ["3100:3100"]
     profiles: ["logs","traces","full"]
 

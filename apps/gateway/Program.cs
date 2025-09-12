@@ -47,6 +47,9 @@ var app = builder.Build();
 app.MapPost("/api/order", async (HttpRequest req, IHttpClientFactory http, ILoggerFactory lf) =>
 {
     var logger = lf.CreateLogger("gateway.order");
+
+    logger.LogInformation("进入Gateway, traceId={TraceId}", Activity.Current?.TraceId.ToString());
+
     var dto = await JsonSerializer.DeserializeAsync<Dictionary<string, object>>(req.Body) ?? new();
 
     var daprPort = Environment.GetEnvironmentVariable("DAPR_HTTP_PORT") ?? "3500";
@@ -58,6 +61,7 @@ app.MapPost("/api/order", async (HttpRequest req, IHttpClientFactory http, ILogg
     var text = await resp.Content.ReadAsStringAsync();
 
     logger.LogInformation("forwarded to ordersvc, status={StatusCode}, traceId={TraceId}", (int)resp.StatusCode, Activity.Current?.TraceId.ToString());
+
     return Results.Content(text, "application/json");
 });
 

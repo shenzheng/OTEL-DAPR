@@ -1,6 +1,10 @@
 receivers:
   otlp:
-    protocols: { grpc: {}, http: {} }
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
 
 processors:
   batch: {}
@@ -11,10 +15,10 @@ processors:
         value: dev
 
 exporters:
-  # loki:
-  #   endpoint: http://loki:3100/loki/api/v1/push
+  debug:
+    verbosity: basic
   otlphttp/loki:
-    endpoint: "http://loki:3100/otlp" # Example: if Loki is running on 'loki' hostname and default port
+    endpoint: "http://loki:3100/otlp"
     tls:
       insecure: true
 
@@ -23,7 +27,14 @@ service:
     logs:
       receivers: [otlp]
       processors: [resource, batch]
-      exporters: [otlphttp/loki]
+      exporters: [otlphttp/loki, debug]
 
   telemetry:
     logs: { level: info }
+    # metrics:
+    #   readers:
+    #     - pull:
+    #         exporter:
+    #           prometheus:
+    #             host: '0.0.0.0'
+    #             port: 8888
