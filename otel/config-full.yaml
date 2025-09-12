@@ -1,12 +1,23 @@
 receivers:
   otlp:
-    protocols: { grpc: {}, http: {} }
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
   zipkin: {}
 
 connectors:
   spanmetrics:
-    dimensions: [service.name, http.method, http.route, http.status_code]
-    exemplars: { enabled: true }
+    # 可选：指标前缀
+    # namespace: spanmetrics
+    dimensions:
+      - name: http.method
+      - name: http.route
+      - name: http.status_code
+    metrics_flush_interval: 15s
+    exemplars:
+      enabled: true
 
 processors:
   batch: {}
@@ -18,14 +29,17 @@ processors:
 
 exporters:
   otlp/tempo:
-    endpoint: http://tempo:4317
+    endpoint: tempo:4317
     tls: { insecure: true }
-  loki:
-    endpoint: http://loki:3100/loki/api/v1/push
+  otlphttp/loki:
+    endpoint: "http://loki:3100/otlp"
+    tls:
+      insecure: true
   prometheus:
     endpoint: 0.0.0.0:8889
 
 service:
+  # connectors: [spanmetrics]
   pipelines:
     traces:
       receivers: [otlp, zipkin]
@@ -35,7 +49,7 @@ service:
     logs:
       receivers: [otlp]
       processors: [resource, batch]
-      exporters: [loki]
+      exporters: [otlphttp/loki]
 
     metrics:
       receivers: [otlp, spanmetrics]
