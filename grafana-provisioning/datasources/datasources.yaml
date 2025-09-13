@@ -7,11 +7,22 @@ datasources:
     url: http://prom:9090
     isDefault: true
 
+  # https://grafana.com/docs/grafana/latest/datasources/tempo/configure-tempo-data-source/
   - name: Tempo
     type: tempo
     access: proxy
     url: http://tempo:3200
-
+    jsonData:
+      tracesToLogsV2:
+        # Field with an internal link pointing to a logs data source in Grafana.
+        # datasourceUid value must match the uid value of the logs data source.
+        datasourceUid: 'Loki'
+        spanStartTimeShift: '-1m'
+        spanEndTimeShift: '1m'
+        tags: []
+        filterByTraceID: true
+        filterBySpanID: true
+        customQuery: false
   - name: Loki
     type: loki
     access: proxy
