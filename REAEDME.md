@@ -63,3 +63,9 @@ flowchart TD
 
     UReq --> A --> AI --> ACT --> UserCode --> HC --> DReq
 ```
+
+## 命令
+
+```sh
+docker compose --profile full up
+```
